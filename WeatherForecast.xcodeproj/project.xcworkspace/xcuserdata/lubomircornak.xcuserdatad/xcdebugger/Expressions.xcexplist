@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<VariablesViewState
+   version = "1.0">
+   <ContextStates>
+      <ContextState
+         contextName = "WeatherManager.fetchWeather(city:completion:):WeatherManager.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "urlString">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "MainViewController.tableView(_:cellForRowAt:):MainViewController.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "weather.hourlyTemperature[0]">
+            </PersistentString>
+            <PersistentString
+               value = "cell.dayAndNightTemperatureLabel.text">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+   </ContextStates>
+</VariablesViewState>
