@@ -122,7 +122,6 @@ extension MainViewController.ViewModel {
         private let degreeSing = "\u{00B0}"
         
         var hourlyTemperature: [Double]!
-        
         var hourlyWeatherCodes: [Int]!
         
         func getWeatherType(for day: Int) -> WeatherType {
