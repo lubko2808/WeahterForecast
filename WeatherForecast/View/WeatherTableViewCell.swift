@@ -9,31 +9,36 @@ import UIKit
 
 class WeatherTableViewCell: UITableViewCell {
     
+    let weatherImageView = UIImageView()
     let dayLabel = UILabel()
-    
     let dayAndNightTemperatureLabel = UILabel()
-    
-    let stackView = UIStackView()
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
-        addSubview(dayLabel)
-        addSubview(dayAndNightTemperatureLabel)
-    
+        contentView.addSubview(weatherImageView)
+        contentView.addSubview(dayLabel)
+        contentView.addSubview(dayAndNightTemperatureLabel)
+        
         dayLabel.font = UIFont.preferredFont(forTextStyle: .headline)
         dayAndNightTemperatureLabel.font = UIFont.preferredFont(forTextStyle: .body)
         dayAndNightTemperatureLabel.textColor = UIColor.darkGray
 
         dayAndNightTemperatureLabel.translatesAutoresizingMaskIntoConstraints = false
         dayLabel.translatesAutoresizingMaskIntoConstraints = false
+        weatherImageView.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            dayLabel.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 10),
-            dayLabel.centerYAnchor.constraint(equalTo: self.centerYAnchor),
+            weatherImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
+            weatherImageView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
+            weatherImageView.widthAnchor.constraint(equalToConstant: 30),
+            weatherImageView.heightAnchor.constraint(equalTo: weatherImageView.widthAnchor, multiplier: 1),
+            
+            dayLabel.leadingAnchor.constraint(equalTo: weatherImageView.trailingAnchor, constant: 20),
+            dayLabel.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
 
-            dayAndNightTemperatureLabel.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -10),
-            dayAndNightTemperatureLabel.centerYAnchor.constraint(equalTo: self.centerYAnchor)
+            dayAndNightTemperatureLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
+            dayAndNightTemperatureLabel.centerYAnchor.constraint(equalTo: contentView.centerYAnchor)
         ])
         
         selectionStyle = .none
@@ -41,22 +46,6 @@ class WeatherTableViewCell: UITableViewCell {
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
-    }
-    
-    func configureStackView() {
-        stackView.axis = .horizontal
-        stackView.alignment = .bottom
-        stackView.distribution = .fill
-        stackView.spacing = 200
-        
-        stackView.addArrangedSubview(dayLabel)
-        stackView.addArrangedSubview(dayAndNightTemperatureLabel)
-        
-        stackView.translatesAutoresizingMaskIntoConstraints = false
-        stackView.topAnchor.constraint(equalTo: contentView.topAnchor).isActive = true
-        stackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor).isActive = true
-        stackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor).isActive = true
-        stackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor).isActive = true
     }
     
     override func awakeFromNib() {

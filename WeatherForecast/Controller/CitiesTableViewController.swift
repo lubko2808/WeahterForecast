@@ -8,19 +8,19 @@
 import UIKit
 import CoreData
 
+protocol CitiesTableDelegate {
+    func didChooseCity(_ city: City)
+}
+
 class CitiesTableViewController: UITableViewController {
     
-    private let cityCellIdentifier = "cityCell"
-    
-    private var cities: [City] = []
+    static let cityCellIdentifier = "cityCell"
     
     private let searchController = UISearchController()
     
+    private var cities: [City] = []
     private var fetchResultController: NSFetchedResultsController<City>!
-    
-    private var choosenCity: City?
-    
-    var callBack: ((City) -> Void)!
+    var delegate: CitiesTableDelegate?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -33,7 +33,7 @@ class CitiesTableViewController: UITableViewController {
         tableView.separatorStyle = .none
 
         tableView.rowHeight = 80
-        tableView.register(CityTableViewCell.self, forCellReuseIdentifier: cityCellIdentifier)
+        tableView.register(CityTableViewCell.self, forCellReuseIdentifier: CitiesTableViewController.cityCellIdentifier)
         fetchCities()
         
         tableView.tableHeaderView = searchController.searchBar
@@ -87,8 +87,8 @@ class CitiesTableViewController: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        choosenCity = cities[indexPath.row]
-        callBack(choosenCity!)
+        let chosenCity = cities[indexPath.row]
+        delegate?.didChooseCity(chosenCity)
         navigationController?.popViewController(animated: true)
     }
     
@@ -105,11 +105,11 @@ class CitiesTableViewController: UITableViewController {
         
         let city = cities[indexPath.row]
         
-        let deleteAction = UIContextualAction(style: .destructive, title: "Delete") { action, sourceView, compeltionHandler in
+        let deleteAction = UIContextualAction(style: .destructive, title: "Delete") { action, sourceView, completionHandler in
             
             self.deleteCity(item: city)
             
-            compeltionHandler(true)
+            completionHandler(true)
         }
         
         deleteAction.backgroundColor = UIColor.systemRed

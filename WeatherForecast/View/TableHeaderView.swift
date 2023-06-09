@@ -10,9 +10,9 @@ import UIKit
 class TableHeaderView: UITableViewHeaderFooterView {
     
     static let identifier = "TableHeader"
-
+    
     let stackView = UIStackView()
-
+    
     func configureStackView() {
         
         addSubview(stackView)
@@ -44,11 +44,11 @@ class TableHeaderView: UITableViewHeaderFooterView {
         label.textColor = .darkGray
         return label
     } ()
-
+    
     override init(reuseIdentifier: String?) {
         super.init(reuseIdentifier: reuseIdentifier)
-
-       configureStackView()
+        configureStackView()
+        
     }
     
     required init?(coder: NSCoder) {
