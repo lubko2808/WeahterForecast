@@ -13,8 +13,7 @@ extension API {
         static let shared = Client()
         private let decoder = JSONDecoder()
         
-        
-        func fetch<Response: Decodable>(_ endpoint: Types.Endpoint, completion: ((Result<Response, Types.Error>) -> Void)? = nil) {
+        func fetch<Response: Decodable>(_ endpoint: Endpoint, completion: ((Result<Response, Error>) -> Void)? = nil) {
             
             let urlRequest = URLRequest(url: endpoint.url)
             

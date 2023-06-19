@@ -10,7 +10,7 @@ import CoreLocation
 
 class MainViewController: UIViewController {
     
-    private let viewModel = ViewModel()
+    private let viewModel = MainViewModel()
     private var city: City?
     
     enum Constants {
@@ -120,7 +120,7 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier:  MainViewController.Constants.cellIdentifier, for: indexPath) as! WeatherTableViewCell
         
-        if viewModel.weather.hourlyTemperature != nil {
+        if viewModel.isDataReady {
             cell.dayLabel.text = viewModel.weather.day(at: indexPath.row)
             cell.dayAndNightTemperatureLabel.text = viewModel.weather.getDayAndNightTemperature(for: indexPath.row)
             cell.weatherImageView.image = UIImage(systemName: viewModel.weather.getWeatherType(for: indexPath.row).rawValue)
@@ -132,7 +132,7 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         let header = tableView.dequeueReusableHeaderFooterView(withIdentifier: TableHeaderView.identifier) as! TableHeaderView
         
-        if viewModel.weather.hourlyTemperature != nil {
+        if viewModel.isDataReady {
             header.currentTemperatureLabel.text = viewModel.weather.getCurrentTemperature()
             header.dayAndNightTemperatureLabel.text = viewModel.weather.getDayAndNightTemperature(for: 0)
         }

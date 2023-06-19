@@ -48,7 +48,6 @@ class TableHeaderView: UITableViewHeaderFooterView {
     override init(reuseIdentifier: String?) {
         super.init(reuseIdentifier: reuseIdentifier)
         configureStackView()
-        
     }
     
     required init?(coder: NSCoder) {
