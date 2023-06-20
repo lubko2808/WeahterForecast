@@ -23,7 +23,7 @@
 		B6BD41EF2A22771000740C15 /* WeatherForecast.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = B6BD41ED2A22771000740C15 /* WeatherForecast.xcdatamodeld */; };
 		B6BD41F12A22771600740C15 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B6BD41F02A22771600740C15 /* Assets.xcassets */; };
 		B6BD41F42A22771600740C15 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B6BD41F22A22771600740C15 /* LaunchScreen.storyboard */; };
-		B6D67C5E2A35135B004841EE /* WeatherModelweatherModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6D67C5D2A35135B004841EE /* WeatherModelweatherModel.swift */; };
+		B6D67C5E2A35135B004841EE /* WeatherModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6D67C5D2A35135B004841EE /* WeatherModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -45,7 +45,7 @@
 		B6BD41F02A22771600740C15 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		B6BD41F32A22771600740C15 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		B6BD41F52A22771600740C15 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		B6D67C5D2A35135B004841EE /* WeatherModelweatherModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherModelweatherModel.swift; sourceTree = "<group>"; };
+		B6D67C5D2A35135B004841EE /* WeatherModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -133,7 +133,7 @@
 			isa = PBXGroup;
 			children = (
 				B616A5F02A2615E700E46450 /* City.swift */,
-				B6D67C5D2A35135B004841EE /* WeatherModelweatherModel.swift */,
+				B6D67C5D2A35135B004841EE /* WeatherModel.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -223,7 +223,7 @@
 				B68E63F12A288E9D0005B741 /* TableHeaderView.swift in Sources */,
 				B679EC322A2394B800E660EE /* WeatherTableViewCell.swift in Sources */,
 				B67FA70D2A33C5F6000D2763 /* WeatherDataFormatter.swift in Sources */,
-				B6D67C5E2A35135B004841EE /* WeatherModelweatherModel.swift in Sources */,
+				B6D67C5E2A35135B004841EE /* WeatherModel.swift in Sources */,
 				B6BD41E92A22771000740C15 /* MainViewController.swift in Sources */,
 				B616A5EF2A26148800E46450 /* CitiesTableViewController.swift in Sources */,
 				B6BD41E52A22771000740C15 /* AppDelegate.swift in Sources */,

@@ -15,14 +15,39 @@ class MainViewModel: NSObject {
     var onError: ((String) -> Void)?
     
     private let locationManager = CLLocationManager()
-    var weather = WeatherDataFormatter()
-    var isDataReady = false
+    private var weatherModel: WeatherModel?
+    private var weatherFormatter = WeatherDataFormatter()
     
     override init() {
         super.init()
         locationManager.requestWhenInUseAuthorization()
         locationManager.delegate = self
         locationManager.requestLocation()
+    }
+    
+    func getCurrentTemperature() -> String? {
+        guard let weatherModel else {
+            return nil
+        }
+        return weatherFormatter.getCurrentTemperature(weatherModel)
+    }
+    
+    func getDayAndNightTemperature(for index: Int) -> String? {
+        guard let weatherModel else {
+            return nil
+        }
+        return weatherFormatter.getDayAndNightTemperature(weatherModel, for: index)
+    }
+    
+    func getWeatherType(for day: Int) -> WeatherDataFormatter.WeatherIcon? {
+        guard let weatherModel else {
+            return nil
+        }
+        return weatherFormatter.getWeatherType(weatherModel, for: day)
+    }
+    
+    func day(at index: Int) -> String {
+        weatherFormatter.day(at: index)
     }
     
     func fetchWeatherForCurrentLocation() {
@@ -54,10 +79,9 @@ class MainViewModel: NSObject {
         switch result {
         case .success(let data):
             if let data = data as? WeatherModel {
-                self.weather.hourlyTemperature = data.hourly.temperature_2m
-                self.weather.hourlyWeatherCodes = data.hourly.weathercode
+                let hourly = WeatherModel.Hourly(temperature_2m: data.hourly.temperature_2m, weathercode: data.hourly.weathercode)
+                weatherModel = WeatherModel(hourly: hourly)
             }
-            isDataReady = true
             self.onResultReceived?()
         case .failure(let failure):
             self.onError?(failure.localizedDescription)
@@ -96,4 +120,3 @@ extension MainViewModel: CLLocationManagerDelegate {
         print("Location update failed: \(error.localizedDescription)")
     }
 }
-    

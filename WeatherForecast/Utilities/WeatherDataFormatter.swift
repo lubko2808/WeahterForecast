@@ -18,7 +18,7 @@ struct WeatherDataFormatter {
         static let thunderstorm = [95, 96, 99]
     }
     
-    enum WeatherType: String {
+    enum WeatherIcon: String {
         case sunny = "sun.max.fill"
         case partlyCloudy = "cloud.sun.fill"
         case cloudy = "cloud.fill"
@@ -28,16 +28,13 @@ struct WeatherDataFormatter {
     }
     
     private let degreeSing = "\u{00B0}"
-    
-    var hourlyTemperature: [Double]!
-    var hourlyWeatherCodes: [Int]!
-    
-    func getWeatherType(for day: Int) -> WeatherType {
+
+    func getWeatherType(_ rawWeather: WeatherModel, for day: Int) -> WeatherIcon {
         var sunnyHoursCount = 0
         var partlyCloudyHoursCount = 0
         var cloudyHoursCount = 0
         
-        for weatherCode in hourlyWeatherCodes[ (day * 24 + 8)...(day * 24 + 22) ] {
+        for weatherCode in rawWeather.hourly.weathercode[ (day * 24 + 8)...(day * 24 + 22) ] {
             if WeatherInterpretCodes.sunny.contains(weatherCode) {
                 sunnyHoursCount += 1
             }
@@ -47,7 +44,7 @@ struct WeatherDataFormatter {
             }
         }
         
-        for weatherCode in hourlyWeatherCodes[ (day * 24 + 8)...(day * 24 + 22) ] {
+        for weatherCode in rawWeather.hourly.weathercode[ (day * 24 + 8)...(day * 24 + 22) ] {
             if WeatherInterpretCodes.partlyCloudy.contains(weatherCode) {
                 partlyCloudyHoursCount += 1
             }
@@ -57,7 +54,7 @@ struct WeatherDataFormatter {
             }
         }
         
-        for weatherCode in hourlyWeatherCodes[ (day * 24 + 8)...(day * 24 + 22) ] {
+        for weatherCode in rawWeather.hourly.weathercode[ (day * 24 + 8)...(day * 24 + 22) ] {
             if WeatherInterpretCodes.cloudy.contains(weatherCode) {
                 cloudyHoursCount += 1
             }
@@ -76,21 +73,20 @@ struct WeatherDataFormatter {
         }
     }
     
-    
-    func getCurrentTemperature() -> String {
+    func getCurrentTemperature(_ rawWeather: WeatherModel) -> String {
         let currentDate = Date()
         
         let calendar = Calendar.current
         let currentHour = calendar.component(.hour, from: currentDate)
         
-        let currentTemperature = hourlyTemperature[currentHour]
+        let currentTemperature = rawWeather.hourly.temperature_2m[currentHour]
         
         return String(currentTemperature)
     }
     
-    func getDayAndNightTemperature(for index: Int) -> String {
-        let dayAndNightTemperature = String(hourlyTemperature[index * 24 + 2]) + degreeSing + "C/" +
-        String(hourlyTemperature[index * 24 + 13]) + degreeSing + "C"
+    func getDayAndNightTemperature(_ rawWeather: WeatherModel, for index: Int) -> String {
+        let dayAndNightTemperature = String(rawWeather.hourly.temperature_2m[index * 24 + 2]) + degreeSing + "C/" +
+        String(rawWeather.hourly.temperature_2m[index * 24 + 13]) + degreeSing + "C"
         
         return dayAndNightTemperature
     }

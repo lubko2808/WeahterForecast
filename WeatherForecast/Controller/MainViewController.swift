@@ -120,10 +120,10 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier:  MainViewController.Constants.cellIdentifier, for: indexPath) as! WeatherTableViewCell
         
-        if viewModel.isDataReady {
-            cell.dayLabel.text = viewModel.weather.day(at: indexPath.row)
-            cell.dayAndNightTemperatureLabel.text = viewModel.weather.getDayAndNightTemperature(for: indexPath.row)
-            cell.weatherImageView.image = UIImage(systemName: viewModel.weather.getWeatherType(for: indexPath.row).rawValue)
+        if let dayAndNightTemp = viewModel.getDayAndNightTemperature(for: indexPath.row), let weatherType = viewModel.getWeatherType(for: indexPath.row) {
+            cell.dayLabel.text = viewModel.day(at: indexPath.row)
+            cell.dayAndNightTemperatureLabel.text = dayAndNightTemp
+            cell.weatherImageView.image = UIImage(systemName: weatherType.rawValue)
         }
         
         return cell
@@ -132,10 +132,11 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         let header = tableView.dequeueReusableHeaderFooterView(withIdentifier: TableHeaderView.identifier) as! TableHeaderView
         
-        if viewModel.isDataReady {
-            header.currentTemperatureLabel.text = viewModel.weather.getCurrentTemperature()
-            header.dayAndNightTemperatureLabel.text = viewModel.weather.getDayAndNightTemperature(for: 0)
+        if let currentTemp = viewModel.getCurrentTemperature(), let dayAndNightTemp = viewModel.getDayAndNightTemperature(for: 0) {
+            header.currentTemperatureLabel.text = currentTemp
+            header.dayAndNightTemperatureLabel.text = dayAndNightTemp
         }
+        
         return header
     }
     
