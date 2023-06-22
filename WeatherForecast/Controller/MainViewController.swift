@@ -30,11 +30,11 @@ class MainViewController: UIViewController {
     }
     
     override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
         if let city = city {
             title = city.name
             viewModel.fetchWeatherForCity(cityName: city.name)
-        } else {
-            title = "Current location"
         }
     }
     
@@ -49,6 +49,11 @@ class MainViewController: UIViewController {
                 self?.tableView.reloadData()
             }
         }
+        viewModel.onCurrentCityReceived = { [weak self] currentCity in
+            DispatchQueue.main.async {
+                self?.title = currentCity
+            }
+        }
     }
     
     private func showError(message: String) {
@@ -60,6 +65,8 @@ class MainViewController: UIViewController {
     @objc private func navigateToCityController() {
         let citiesTableViewController = CitiesTableViewController()
         citiesTableViewController.delegate = self
+        citiesTableViewController.currentLatitude = viewModel.currentLatitude
+        citiesTableViewController.currentLongitude = viewModel.currentLongitude
         navigationController?.pushViewController(citiesTableViewController, animated: true)
     }
     

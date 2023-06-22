@@ -7,6 +7,7 @@
 
 import UIKit
 import CoreData
+import CoreLocation
 
 protocol CitiesTableDelegate {
     func didChooseCity(_ city: City)
@@ -15,6 +16,8 @@ protocol CitiesTableDelegate {
 class CitiesTableViewController: UITableViewController {
     
     static let cityCellIdentifier = "cityCell"
+    var currentLatitude: CLLocationDegrees?
+    var currentLongitude: CLLocationDegrees?
     
     private let searchController = UISearchController()
     
@@ -48,25 +51,36 @@ class CitiesTableViewController: UITableViewController {
     }
     
     @objc private func addCity() {
-        
-        let addAlertController = UIAlertController(title: "add city", message: "enter the name of the city you want to add", preferredStyle: .alert)
-        
-        addAlertController.addTextField()
-        let textField = (addAlertController.textFields?.first)!
-        textField.placeholder = "name"
-        
-        addAlertController.addAction(UIAlertAction(title: "Submit", style: .cancel, handler: {_ in
-            guard let text = textField.text, !text.isEmpty else {
-                return
-            }
-            
-            self.createCity(cityName: textField.text!)
-        }))
-        
-        addAlertController.addAction(UIAlertAction(title: "cancel", style: .destructive, handler: nil))
-        
-        present(addAlertController, animated: true)
+        let destinationViewController = NewCityViewController()
+        let navigationVC = UINavigationController(rootViewController: destinationViewController)
+        //destinationViewController.modalPresentationStyle = .fullScreen
+        navigationVC.modalTransitionStyle = .flipHorizontal
+        destinationViewController.currentLatitude = currentLatitude
+        destinationViewController.currentLongitude = currentLongitude
+      
+        present(navigationVC, animated: true, completion: nil)
     }
+    
+//    @objc private func addCity() {
+//
+//        let addAlertController = UIAlertController(title: "add city", message: "enter the name of the city you want to add", preferredStyle: .alert)
+//
+//        addAlertController.addTextField()
+//        let textField = (addAlertController.textFields?.first)!
+//        textField.placeholder = "name"
+//
+//        addAlertController.addAction(UIAlertAction(title: "Submit", style: .cancel, handler: {_ in
+//            guard let text = textField.text, !text.isEmpty else {
+//                return
+//            }
+//
+//            self.createCity(cityName: textField.text!)
+//        }))
+//
+//        addAlertController.addAction(UIAlertAction(title: "cancel", style: .destructive, handler: nil))
+//
+//        present(addAlertController, animated: true)
+//    }
 
     // MARK: - Table view data source
 
