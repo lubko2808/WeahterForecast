@@ -26,6 +26,7 @@ class CitiesTableViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        
         configureTableView()
         configureNavigationBar()
     }

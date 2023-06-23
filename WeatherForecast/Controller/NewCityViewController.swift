@@ -113,6 +113,7 @@ class NewCityViewController: UIViewController {
     @objc private func cancelAction() {
         dismiss(animated: true)
     }
+
 }
 
 extension NewCityViewController: UITextFieldDelegate {

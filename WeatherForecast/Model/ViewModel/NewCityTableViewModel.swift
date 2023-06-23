@@ -12,6 +12,7 @@ class NewCityTableViewModel {
     var onResultReceived: (() -> Void)?
     var onError: ((String) -> Void)?
 
+    var cityModel: CityModel?
     var matchingCities: [String] = []
     var countries: [String] = []
     
