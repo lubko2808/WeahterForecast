@@ -27,15 +27,6 @@ enum API {
         case forecast(latitude: Double, longitude: Double)
         case city(prefix: String)
         
-        var headers: [(key: String, value: String)]? {
-            switch self {
-            case .forecast:
-                return nil
-            case .city:
-                return [(key: "X-RapidAPI-Key", value: "9a79c4044dmsh8b389b0bc50c7d1p18e755jsn08c7c63170a8")]
-            }
-        }
-        
         var url: URL {
             var components = URLComponents()
             
@@ -52,12 +43,11 @@ enum API {
                 ]
             case .city(let prefix):
                 components.scheme = "https"
-                components.host = "wft-geo-db.p.rapidapi.com"
+                components.host = "geodb-cities-api.wirefreethought.com"
                 components.path = "/v1/geo/cities"
                 components.queryItems = [
                     URLQueryItem(name: "namePrefix", value: prefix),
                     URLQueryItem(name: "minPopulation", value: "100000"),
-                    URLQueryItem(name: "limit", value: "10")
                 ]
             }
             

@@ -11,7 +11,7 @@ struct CityModel: Decodable {
     let data: [Data]
     
     struct Data: Decodable {
-        let city: String
+        let name: String
         let country: String
     }
 }
