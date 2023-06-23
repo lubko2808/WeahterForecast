@@ -65,8 +65,6 @@ class MainViewController: UIViewController {
     @objc private func navigateToCityController() {
         let citiesTableViewController = CitiesTableViewController()
         citiesTableViewController.delegate = self
-        citiesTableViewController.currentLatitude = viewModel.currentLatitude
-        citiesTableViewController.currentLongitude = viewModel.currentLongitude
         navigationController?.pushViewController(citiesTableViewController, animated: true)
     }
     
@@ -150,7 +148,6 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         return 200
     }
-    
 }
 
 extension MainViewController: CitiesTableDelegate {
