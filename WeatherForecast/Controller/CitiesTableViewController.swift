@@ -7,6 +7,7 @@
 
 import UIKit
 import CoreData
+import CoreLocation
 
 protocol CitiesTableDelegate {
     func didChooseCity(_ city: City)
@@ -24,7 +25,8 @@ class CitiesTableViewController: UITableViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
+        
         configureTableView()
         configureNavigationBar()
     }
@@ -48,24 +50,12 @@ class CitiesTableViewController: UITableViewController {
     }
     
     @objc private func addCity() {
-        
-        let addAlertController = UIAlertController(title: "add city", message: "enter the name of the city you want to add", preferredStyle: .alert)
-        
-        addAlertController.addTextField()
-        let textField = (addAlertController.textFields?.first)!
-        textField.placeholder = "name"
-        
-        addAlertController.addAction(UIAlertAction(title: "Submit", style: .cancel, handler: {_ in
-            guard let text = textField.text, !text.isEmpty else {
-                return
-            }
-            
-            self.createCity(cityName: textField.text!)
-        }))
-        
-        addAlertController.addAction(UIAlertAction(title: "cancel", style: .destructive, handler: nil))
-        
-        present(addAlertController, animated: true)
+        let destinationViewController = NewCityViewController()
+        destinationViewController.delegate = self
+        let navigationVC = UINavigationController(rootViewController: destinationViewController)
+        navigationVC.modalTransitionStyle = .flipHorizontal
+      
+        present(navigationVC, animated: true, completion: nil)
     }
 
     // MARK: - Table view data source
@@ -179,3 +169,9 @@ extension CitiesTableViewController: UISearchResultsUpdating {
     }
 }
 
+extension CitiesTableViewController: NewCityTableDelegate {
+    
+    func didChooseCity(_ city: String) {
+        self.createCity(cityName: city)
+    }
+}

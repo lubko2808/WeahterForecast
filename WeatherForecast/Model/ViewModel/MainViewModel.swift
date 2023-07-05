@@ -11,8 +11,12 @@ import CoreLocation
 
 class MainViewModel: NSObject {
     
+    var onCurrentCityReceived: ((String) -> Void)?
     var onResultReceived: (() -> Void)?
     var onError: ((String) -> Void)?
+    
+    var currentLatitude: CLLocationDegrees?
+    var currentLongitude: CLLocationDegrees?
     
     private let locationManager = CLLocationManager()
     private var weatherModel: WeatherModel?
@@ -48,20 +52,6 @@ class MainViewModel: NSObject {
     
     func day(at index: Int) -> String {
         weatherFormatter.day(at: index)
-    }
-    
-    func fetchWeatherForCurrentLocation() {
-        guard let currentLocation = locationManager.location else {
-            print("Can't obtain current location")
-            return
-        }
-        
-        let currentLatitude = currentLocation.coordinate.latitude
-        let currentLongitude = currentLocation.coordinate.longitude
-        
-        API.Client.shared.fetch(.forecast(latitude: currentLatitude, longitude: currentLongitude)) { (result: Result<WeatherModel, API.Error>) in
-            self.handleResult(result)
-        }
     }
     
     func fetchWeatherForCity(cityName: String) {
@@ -113,7 +103,32 @@ class MainViewModel: NSObject {
 extension MainViewModel: CLLocationManagerDelegate {
 
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        fetchWeatherForCurrentLocation()
+        //fetchWeatherForCurrentLocation()
+        
+        guard let currentLocation = locationManager.location else {
+            onError?("Can't obtain current location")
+            return
+        }
+        
+        CLGeocoder().reverseGeocodeLocation(currentLocation, preferredLocale: Locale(identifier: "en")) {(placemarks, error) in
+            if let error {
+                self.onError?(error.localizedDescription)
+                return
+            }
+
+            guard let city = placemarks?.first?.locality else {
+                self.onError?("Can't obtain current city")
+                return
+            }
+            self.onCurrentCityReceived?(city)
+        }
+        
+        currentLatitude = currentLocation.coordinate.latitude
+        currentLongitude = currentLocation.coordinate.longitude
+        
+        API.Client.shared.fetch(.forecast(latitude: currentLatitude!, longitude: currentLongitude!)) { (result: Result<WeatherModel, API.Error>) in
+            self.handleResult(result)
+        }
     }
     
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {

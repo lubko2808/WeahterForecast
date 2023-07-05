@@ -30,11 +30,11 @@ class MainViewController: UIViewController {
     }
     
     override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
         if let city = city {
             title = city.name
             viewModel.fetchWeatherForCity(cityName: city.name)
-        } else {
-            title = "Current location"
         }
     }
     
@@ -47,6 +47,11 @@ class MainViewController: UIViewController {
         viewModel.onResultReceived = { [weak self] in
             DispatchQueue.main.async {
                 self?.tableView.reloadData()
+            }
+        }
+        viewModel.onCurrentCityReceived = { [weak self] currentCity in
+            DispatchQueue.main.async {
+                self?.title = currentCity
             }
         }
     }
@@ -143,7 +148,6 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         return 200
     }
-    
 }
 
 extension MainViewController: CitiesTableDelegate {
