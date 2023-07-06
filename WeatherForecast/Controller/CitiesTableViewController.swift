@@ -51,14 +51,14 @@ class CitiesTableViewController: UITableViewController {
     }
     
     @objc private func addCity() {
-        let destinationViewController = NewCityViewController()
-        let navigationVC = UINavigationController(rootViewController: destinationViewController)
-        //destinationViewController.modalPresentationStyle = .fullScreen
-        navigationVC.modalTransitionStyle = .flipHorizontal
-        destinationViewController.currentLatitude = currentLatitude
-        destinationViewController.currentLongitude = currentLongitude
-      
-        present(navigationVC, animated: true, completion: nil)
+//        let destinationViewController = NewCityViewController()
+//        let navigationVC = UINavigationController(rootViewController: destinationViewController)
+//        //destinationViewController.modalPresentationStyle = .fullScreen
+//        navigationVC.modalTransitionStyle = .flipHorizontal
+//        destinationViewController.currentLatitude = currentLatitude
+//        destinationViewController.currentLongitude = currentLongitude
+//
+//        present(navigationVC, animated: true, completion: nil)
     }
     
 //    @objc private func addCity() {
