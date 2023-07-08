@@ -10,100 +10,100 @@ import CoreData
 import CoreLocation
 
 protocol CitiesTableDelegate {
-    func didChooseCity(_ city: City)
+    func didChooseCity(_ city: String)
 }
 
-class CitiesTableViewController: UITableViewController {
+class CitiesTableViewController: UIViewController {
     
     static let cityCellIdentifier = "cityCell"
-    var currentLatitude: CLLocationDegrees?
-    var currentLongitude: CLLocationDegrees?
-    
+
+    private let tableView = UITableView()
     private let searchController = UISearchController()
+    private let backgroundImageView = UIImageView()
     
     private var cities: [City] = []
     private var fetchResultController: NSFetchedResultsController<City>!
     var delegate: CitiesTableDelegate?
+    
+// MARK: - Life cycle
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        configureBackground()
         configureTableView()
         configureNavigationBar()
     }
     
+// MARK: - UI Configuration
+    
+    private func configureBackground() {
+        
+        view.addSubview(backgroundImageView)
+        backgroundImageView.image = UIImage(named: "background")
+        backgroundImageView.contentMode = .scaleAspectFill
+        backgroundImageView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            backgroundImageView.topAnchor.constraint(equalTo: view.topAnchor),
+            backgroundImageView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            backgroundImageView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            backgroundImageView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+        ])
+        let blurEffect = UIBlurEffect(style: .light)
+        let blurEffectView = UIVisualEffectView(effect: blurEffect)
+        backgroundImageView.addSubview(blurEffectView)
+        blurEffectView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            blurEffectView.topAnchor.constraint(equalTo: view.topAnchor),
+            blurEffectView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            blurEffectView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            blurEffectView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+        ])
+        
+    }
+    
+    
     private func configureTableView() {
+        view.addSubview(tableView)
         tableView.separatorStyle = .none
+        tableView.backgroundColor = .clear
 
         tableView.rowHeight = 80
         tableView.register(CityTableViewCell.self, forCellReuseIdentifier: CitiesTableViewController.cityCellIdentifier)
         fetchCities()
         
-        tableView.tableHeaderView = searchController.searchBar
-        
-        searchController.searchResultsUpdater = self
-        searchController.obscuresBackgroundDuringPresentation = false
+        tableView.delegate = self
+        tableView.dataSource = self
+
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+        ])
     }
     
     private func configureNavigationBar() {
         navigationItem.largeTitleDisplayMode = .never
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addCity))
+        navigationController?.navigationBar.tintColor = .white
+        
+        navigationItem.searchController = searchController
+        searchController.searchResultsUpdater = self
+        searchController.obscuresBackgroundDuringPresentation = false
+        searchController.searchBar.placeholder = "Search cities..."
+        searchController.searchBar.backgroundImage = UIImage()
     }
+    
+// MARK: - Other
     
     @objc private func addCity() {
-//        let destinationViewController = NewCityViewController()
-//        let navigationVC = UINavigationController(rootViewController: destinationViewController)
-//        //destinationViewController.modalPresentationStyle = .fullScreen
-//        navigationVC.modalTransitionStyle = .flipHorizontal
-//        destinationViewController.currentLatitude = currentLatitude
-//        destinationViewController.currentLongitude = currentLongitude
-//
-//        present(navigationVC, animated: true, completion: nil)
-    }
-    
-//    @objc private func addCity() {
-//
-//        let addAlertController = UIAlertController(title: "add city", message: "enter the name of the city you want to add", preferredStyle: .alert)
-//
-//        addAlertController.addTextField()
-//        let textField = (addAlertController.textFields?.first)!
-//        textField.placeholder = "name"
-//
-//        addAlertController.addAction(UIAlertAction(title: "Submit", style: .cancel, handler: {_ in
-//            guard let text = textField.text, !text.isEmpty else {
-//                return
-//            }
-//
-//            self.createCity(cityName: textField.text!)
-//        }))
-//
-//        addAlertController.addAction(UIAlertAction(title: "cancel", style: .destructive, handler: nil))
-//
-//        present(addAlertController, animated: true)
-//    }
-
-    // MARK: - Table view data source
-
-    override func numberOfSections(in tableView: UITableView) -> Int {
-        return 1
-    }
-
-    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return cities.count
-    }
-
-    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: CitiesTableViewController.cityCellIdentifier, for: indexPath) as! CityTableViewCell
-        
-        cell.nameLabel.text = cities[indexPath.row].name
-
-        return cell
-    }
-    
-    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let chosenCity = cities[indexPath.row]
-        delegate?.didChooseCity(chosenCity)
-        navigationController?.popViewController(animated: true)
+        let destinationViewController = NewCityViewController()
+        destinationViewController.delegate = self
+        let navigationVC = UINavigationController(rootViewController: destinationViewController)
+        navigationVC.modalTransitionStyle = .flipHorizontal
+        present(navigationVC, animated: true, completion: nil)
     }
     
     private func reloadTableView() {
@@ -115,25 +115,7 @@ class CitiesTableViewController: UITableViewController {
         }
     }
     
-    override func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
-        
-        let city = cities[indexPath.row]
-        
-        let deleteAction = UIContextualAction(style: .destructive, title: "Delete") { action, sourceView, completionHandler in
-            
-            self.deleteCity(item: city)
-            
-            completionHandler(true)
-        }
-        
-        deleteAction.backgroundColor = UIColor.systemRed
-        deleteAction.image = UIImage(systemName: "trash")
-        
-        let swipeConfiguration = UISwipeActionsConfiguration(actions: [deleteAction])
-        return swipeConfiguration
-    }
-
-    // MARK: - Core Data
+// MARK: - Core Data
     
     private let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
     
@@ -182,6 +164,57 @@ class CitiesTableViewController: UITableViewController {
     }
 }
 
+// MARK: - UITableViewDelegate, UITableViewDataSource
+
+extension CitiesTableViewController: UITableViewDelegate, UITableViewDataSource {
+    
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return 1
+    }
+
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return cities.count
+    }
+
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: CitiesTableViewController.cityCellIdentifier, for: indexPath) as! CityTableViewCell
+        cell.nameLabel.text = cities[indexPath.row].name
+        return cell
+    }
+    
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+
+        cell.transform = CGAffineTransform(translationX: 0, y: tableView.rowHeight * 1.4)
+        cell.alpha = 0
+        UIView.animate(withDuration: 0.5) {
+            cell.transform = .identity
+            cell.alpha = 1
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let chosenCity = cities[indexPath.row]
+        delegate?.didChooseCity(chosenCity.name)
+        navigationController?.popViewController(animated: true)
+    }
+    
+    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        
+        let city = cities[indexPath.row]
+        
+        let deleteAction = UIContextualAction(style: .destructive, title: "Delete") { action, sourceView, completionHandler in
+            self.deleteCity(item: city)
+            completionHandler(true)
+        }
+        
+        deleteAction.backgroundColor = UIColor.systemRed
+        deleteAction.image = UIImage(systemName: "trash")
+        
+        let swipeConfiguration = UISwipeActionsConfiguration(actions: [deleteAction])
+        return swipeConfiguration
+    }
+}
+
 extension CitiesTableViewController: UISearchResultsUpdating {
     func updateSearchResults(for searchController: UISearchController) {
         
@@ -193,3 +226,9 @@ extension CitiesTableViewController: UISearchResultsUpdating {
     }
 }
 
+extension CitiesTableViewController: NewCityTableDelegate {
+    
+    func didChooseCity(_ city: String) {
+        self.createCity(cityName: city)
+    }
+}

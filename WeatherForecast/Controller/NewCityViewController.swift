@@ -8,35 +8,84 @@
 import UIKit
 import CoreLocation
 
+protocol NewCityTableDelegate {
+    func didChooseCity(_ city: String)
+}
+
 class NewCityViewController: UIViewController {
     
+    private var timer: Timer?
+    private let viewModel = NewCityTableViewModel()
     private let cellIdentifier = "cell"
-    var currentLatitude: CLLocationDegrees?
-    var currentLongitude: CLLocationDegrees?
-    private var matchingCities: [String] = []
 
-    private let saveBarButton = UIBarButtonItem()
+    private let backgroundImageView = UIImageView()
     private let cancelBarButton = UIBarButtonItem()
     private let cityTextField = RoundedTextField()
     private let tableView = UITableView()
     
+    var delegate: NewCityTableDelegate?
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .white
-
+        
+        configureBackground()
         configureNavigationBar()
         configureCityTextField()
         configureTableView()
+        bindToModel()
+    }
+    
+    private func configureBackground() {
+        view.addSubview(backgroundImageView)
+        backgroundImageView.image = UIImage(named: "background1")
+        backgroundImageView.contentMode = .scaleAspectFill
+        backgroundImageView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            backgroundImageView.topAnchor.constraint(equalTo: view.topAnchor),
+            backgroundImageView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            backgroundImageView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            backgroundImageView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+        ])
+
+        let blurEffect = UIBlurEffect(style: .light)
+        let blurEffectView = UIVisualEffectView(effect: blurEffect)
+        backgroundImageView.addSubview(blurEffectView)
+        blurEffectView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            blurEffectView.topAnchor.constraint(equalTo: view.topAnchor),
+            blurEffectView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            blurEffectView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            blurEffectView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+        ])
+    }
+    
+    private func bindToModel() {
+        viewModel.onResultReceived = { [weak self] in
+            DispatchQueue.main.async {
+                self?.tableView.reloadData()
+            }
+        }
+        viewModel.onError = { [weak self] message in
+            DispatchQueue.main.async {
+                self?.showError(message: message)
+            }
+        }
+    }
+    
+    private func showError(message: String) {
+        let alert = UIAlertController(title: "Error", message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "Ok", style: .default, handler: nil))
+        present(alert, animated: true, completion: nil)
     }
     
     private func configureTableView() {
         view.addSubview(tableView)
-        //tableView.separatorStyle = .none
+        tableView.backgroundColor = .clear
+        tableView.separatorStyle = .none
         tableView.delegate = self
         tableView.dataSource = self
-        tableView.rowHeight = 80
-        tableView.register(UITableViewCell.self, forCellReuseIdentifier: cellIdentifier)
+        tableView.rowHeight = 60
+        tableView.register(MatchingCityTableViewCell.self, forCellReuseIdentifier: cellIdentifier)
         
         tableView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
@@ -65,104 +114,87 @@ class NewCityViewController: UIViewController {
     }
 
     private func configureNavigationBar() {
+        
         self.title = "Add city"
         navigationItem.largeTitleDisplayMode = .never
         navigationController?.navigationBar.isHidden = false
         
         if let appearance = navigationController?.navigationBar.standardAppearance {
-            appearance.titleTextAttributes = [.font: UIFont.systemFont(ofSize: 22)]
-            //appearance.largeTitleTextAttributes = [.foregroundColor: UIColor.systemBlue,]
+            appearance.configureWithTransparentBackground()
+            appearance.titleTextAttributes = [ .foregroundColor: UIColor.white ,.font: UIFont.systemFont(ofSize: 25)]
             
             navigationController?.navigationBar.standardAppearance = appearance
             navigationController?.navigationBar.compactAppearance = appearance
             navigationController?.navigationBar.scrollEdgeAppearance = appearance
         }
-        
-        saveBarButton.title = "save"
-        saveBarButton.tintColor = UIColor.systemBlue
-        saveBarButton.style = .plain
-        saveBarButton.setTitleTextAttributes([.font: UIFont.systemFont(ofSize: 22)], for: .normal)
-        saveBarButton.target = self
-        saveBarButton.action = #selector(saveCityAction)
-        
+
         cancelBarButton.title = "cancel"
-        cancelBarButton.tintColor = UIColor.systemBlue
+        cancelBarButton.tintColor = UIColor.white
         cancelBarButton.style = .plain
         cancelBarButton.setTitleTextAttributes([.font: UIFont.systemFont(ofSize: 22)], for: .normal)
         cancelBarButton.target = self
         cancelBarButton.action = #selector(cancelAction)
         
-        navigationItem.rightBarButtonItem = saveBarButton
         navigationItem.leftBarButtonItem = cancelBarButton
     }
+    
+    @objc private func cancelAction() {
+        dismiss(animated: true)
+    }
 
-    @objc private func saveCityAction() {}
-    
-    @objc private func cancelAction() {}
-    
 }
 
 extension NewCityViewController: UITextFieldDelegate {
     
     func textFieldDidChangeSelection(_ textField: UITextField) {
-        guard let currentLatitude, let currentLongitude else {
-            print("Current location is unknown")
+        
+        guard let cityPrefix  = textField.text else {
             return
         }
-        
-        let geocoder = CLGeocoder()
-        
-        let center = CLLocationCoordinate2D(latitude: currentLatitude, longitude: currentLongitude)
-        let radius: CLLocationDistance = 50000
-        let region = CLCircularRegion(center: center, radius: radius, identifier: "CityRegion")
-        
-        geocoder.geocodeAddressString("Lviv", in: region) { placemarks, error in
-            if let error = error {
-                print("Geocoding error: \(error.localizedDescription)")
+
+        timer?.invalidate()
+
+        timer = Timer.scheduledTimer(withTimeInterval: 0.7, repeats: false, block: { [weak self] (timer) in
+            if cityPrefix == "" {
+                self?.viewModel.matchingCities = []
+                self?.tableView.reloadData()
                 return
+            } else {
+                self?.viewModel.fetchCities(beginningWith: cityPrefix)
             }
-            
-            if let nearbyPlacemarks = placemarks {
-                for placemark in nearbyPlacemarks {
-                    if let nearbyCity = placemark.locality {
-                        print("Nearby city: \(nearbyCity)")
-                    }
-                }
-            }
-            
-        }
+        })
     }
-    
 }
 
 extension NewCityViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return matchingCities.count
+        return viewModel.matchingCities.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: cellIdentifier, for: indexPath)
-        cell.textLabel?.text = matchingCities[indexPath.row]
+        
+        let cell = tableView.dequeueReusableCell(withIdentifier: cellIdentifier, for: indexPath) as! MatchingCityTableViewCell
+        
+        if viewModel.matchingCities.isEmpty == false {
+            cell.cityLabel.text = viewModel.matchingCities[indexPath.row]
+            cell.cityLabel.text?.append(",")
+            cell.countryLabel.text = viewModel.countries[indexPath.row]
+        }
         return cell
     }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let chosenCity = viewModel.matchingCities[indexPath.row]
+        delegate?.didChooseCity(chosenCity)
+        dismiss(animated: true)
+    }
+    
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        
+        cell.alpha = 0
+        UIView.animate(withDuration: 0.5, delay: Double(indexPath.row) * 0.05) {
+            cell.alpha = 1
+        }
+        
+    }
 }
-
-
-
-//if let nearbyPlacemarks = placemarks {
-//    // Process the nearby placemarks and filter based on city names
-//    let filteredCities = nearbyPlacemarks.filter { placemark in
-//        if let nearbyCity = placemark.locality {
-//            // Check if the city name contains the desired letters
-//            return nearbyCity.range(of: "abc", options: .caseInsensitive) != nil
-//        }
-//        return false
-//    }
-//
-//    // Print the filtered city names
-//    for placemark in filteredCities {
-//        if let nearbyCity = placemark.locality {
-//            print("Filtered city: \(nearbyCity)")
-//        }
-//    }
-//}
