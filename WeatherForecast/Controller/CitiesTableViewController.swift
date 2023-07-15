@@ -9,10 +9,6 @@ import UIKit
 import CoreData
 import CoreLocation
 
-protocol CitiesTableDelegate {
-    func didChooseCity(_ city: String)
-}
-
 class CitiesTableViewController: UIViewController {
     
     static let cityCellIdentifier = "cityCell"
@@ -21,9 +17,9 @@ class CitiesTableViewController: UIViewController {
     private let searchController = UISearchController()
     private let backgroundImageView = UIImageView()
     
+    weak var coordinator: MainCoordinator?
     private var cities: [City] = []
     private var fetchResultController: NSFetchedResultsController<City>!
-    var delegate: CitiesTableDelegate?
     
 // MARK: - Life cycle
 
@@ -87,6 +83,9 @@ class CitiesTableViewController: UIViewController {
     private func configureNavigationBar() {
         navigationItem.largeTitleDisplayMode = .never
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addCity))
+        let arrowConfig = UIImage.SymbolConfiguration(weight: .bold)
+        let arrowImage = UIImage(systemName: "chevron.backward", withConfiguration: arrowConfig)
+        navigationItem.leftBarButtonItem = UIBarButtonItem(image: arrowImage, style: .plain, target: self, action: #selector(navigateBack))
         navigationController?.navigationBar.tintColor = .white
         
         navigationItem.searchController = searchController
@@ -98,12 +97,12 @@ class CitiesTableViewController: UIViewController {
     
 // MARK: - Other
     
+    @objc private func navigateBack() {
+        coordinator?.navigateToMainController()
+    }
+    
     @objc private func addCity() {
-        let destinationViewController = NewCityViewController()
-        destinationViewController.delegate = self
-        let navigationVC = UINavigationController(rootViewController: destinationViewController)
-        navigationVC.modalTransitionStyle = .flipHorizontal
-        present(navigationVC, animated: true, completion: nil)
+        coordinator?.addCity()
     }
     
     private func reloadTableView() {
@@ -140,7 +139,7 @@ class CitiesTableViewController: UIViewController {
         }
     }
 
-    private func createCity(cityName: String) {
+    func createCity(cityName: String) {
         let newItem = City(context: context)
         newItem.name = cityName
         
@@ -179,6 +178,7 @@ extension CitiesTableViewController: UITableViewDelegate, UITableViewDataSource 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: CitiesTableViewController.cityCellIdentifier, for: indexPath) as! CityTableViewCell
         cell.nameLabel.text = cities[indexPath.row].name
+        cell.selectionStyle = .none
         return cell
     }
     
@@ -193,9 +193,18 @@ extension CitiesTableViewController: UITableViewDelegate, UITableViewDataSource 
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let chosenCity = cities[indexPath.row]
-        delegate?.didChooseCity(chosenCity.name)
-        navigationController?.popViewController(animated: true)
+        guard let cell = tableView.cellForRow(at: indexPath) else { return }
+
+        UIView.animate(withDuration: 0.125, animations: {
+            cell.transform = CGAffineTransform(scaleX: 1.2, y: 1.2)
+        }) { _ in
+            UIView.animate(withDuration: 0.125) {
+                cell.transform = .identity
+            } completion: { _ in
+                let chosenCity = self.cities[indexPath.row]
+                self.coordinator?.navigateToMainController(with: chosenCity.name)
+            }
+        }
     }
     
     func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
@@ -226,9 +235,4 @@ extension CitiesTableViewController: UISearchResultsUpdating {
     }
 }
 
-extension CitiesTableViewController: NewCityTableDelegate {
-    
-    func didChooseCity(_ city: String) {
-        self.createCity(cityName: city)
-    }
-}
+
