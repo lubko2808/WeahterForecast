@@ -8,12 +8,9 @@
 import UIKit
 import CoreLocation
 
-protocol NewCityTableDelegate {
-    func didChooseCity(_ city: String)
-}
-
 class NewCityViewController: UIViewController {
     
+    weak var coordinator: MainCoordinator?
     private var timer: Timer?
     private let viewModel = NewCityTableViewModel()
     private let cellIdentifier = "cell"
@@ -22,8 +19,6 @@ class NewCityViewController: UIViewController {
     private let cancelBarButton = UIBarButtonItem()
     private let cityTextField = RoundedTextField()
     private let tableView = UITableView()
-    
-    var delegate: NewCityTableDelegate?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -37,7 +32,7 @@ class NewCityViewController: UIViewController {
     
     private func configureBackground() {
         view.addSubview(backgroundImageView)
-        backgroundImageView.image = UIImage(named: "background1")
+        backgroundImageView.image = UIImage(named: "background")
         backgroundImageView.contentMode = .scaleAspectFill
         backgroundImageView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
@@ -84,17 +79,16 @@ class NewCityViewController: UIViewController {
         tableView.separatorStyle = .none
         tableView.delegate = self
         tableView.dataSource = self
-        tableView.rowHeight = 60
+        tableView.rowHeight = 90
         tableView.register(MatchingCityTableViewCell.self, forCellReuseIdentifier: cellIdentifier)
         
         tableView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             tableView.topAnchor.constraint(equalTo: cityTextField.bottomAnchor, constant: 22),
-            tableView.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor),
-            tableView.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor),
+            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             tableView.bottomAnchor.constraint(equalTo: view.layoutMarginsGuide.bottomAnchor)
         ])
-        
     }
     
     private func configureCityTextField() {
@@ -177,16 +171,26 @@ extension NewCityViewController: UITableViewDelegate, UITableViewDataSource {
         
         if viewModel.matchingCities.isEmpty == false {
             cell.cityLabel.text = viewModel.matchingCities[indexPath.row]
-            cell.cityLabel.text?.append(",")
             cell.countryLabel.text = viewModel.countries[indexPath.row]
         }
+        cell.selectionStyle = .none
         return cell
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        
+        guard let cell = tableView.cellForRow(at: indexPath) else { return }
+
+        UIView.animate(withDuration: 0.125, animations: {
+            cell.transform = CGAffineTransform(scaleX: 1.2, y: 1.2)
+        }) { _ in
+            UIView.animate(withDuration: 0.125) {
+                cell.transform = .identity
+            }
+        }
+        
         let chosenCity = viewModel.matchingCities[indexPath.row]
-        delegate?.didChooseCity(chosenCity)
-        dismiss(animated: true)
+        coordinator?.navigateToCitiesTableViewController(with: chosenCity)
     }
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {

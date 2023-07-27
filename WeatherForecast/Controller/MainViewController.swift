@@ -10,8 +10,9 @@ import CoreLocation
 
 class MainViewController: UIViewController {
     
+    weak var coordinator: MainCoordinator?
     private let viewModel = MainViewModel()
-    private var city: String?
+    var city: String?
     
     enum Constants {
         static let cellIdentifier = "cell"
@@ -72,20 +73,6 @@ class MainViewController: UIViewController {
         }
     }
     
-//    override func viewDidAppear(_ animated: Bool) {
-//        super.viewWillAppear(animated)
-////        currentTempLabel.alpha = 0
-////        dayAndNightTempLabel.alpha = 0
-//
-//        //navigationController?.navigationBar.alpha = 0
-//        navigationController?.navigationBar.transform = CGAffineTransform(scaleX: 2, y: 2)
-//        navigationController?.navigationBar.transform = CGAffineTransform(translationX: 0, y: -100)
-//        UIView.animate(withDuration: 0.7, delay: 0.4) {
-//            self.navigationController?.navigationBar.alpha = 1
-//            self.navigationController?.navigationBar.transform = .identity
-//        }
-//    }
-    
 // MARK: - UI Configuration
     
     private func configureBackground() {
@@ -94,6 +81,7 @@ class MainViewController: UIViewController {
             UIColor.systemBlue.withAlphaComponent(0.6).cgColor,
             UIColor.systemIndigo.withAlphaComponent(0.5).cgColor,
         ]
+        view.backgroundColor = .white
         view.layer.addSublayer(gradientLayer)
     }
     
@@ -136,7 +124,7 @@ class MainViewController: UIViewController {
         
         currentTempLabel.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            currentTempLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            currentTempLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 12),
             currentTempLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 30)
         ])
     }
@@ -223,9 +211,7 @@ class MainViewController: UIViewController {
     }
     
     @objc private func navigateToCityController() {
-        let citiesTableViewController = CitiesTableViewController()
-        citiesTableViewController.delegate = self
-        navigationController?.pushViewController(citiesTableViewController, animated: true)
+        coordinator?.chooseCity()
     }
     
 
@@ -257,14 +243,6 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
         UIView.animate(withDuration: 1, delay: Double(indexPath.row) * 0.05, usingSpringWithDamping: 0.8, initialSpringVelocity: 0, options: .curveEaseInOut) {
             cell.transform = .identity
         }
-    }
-    
-}
-
-extension MainViewController: CitiesTableDelegate {
-    
-    func didChooseCity(_ city: String) {
-        self.city = city
     }
     
 }
