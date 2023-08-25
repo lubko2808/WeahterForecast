@@ -75,27 +75,21 @@ struct WeatherDataFormatter {
     
     func getCurrentTemperature(_ rawWeather: WeatherModel) -> String {
         let currentDate = Date()
-        
         let calendar = Calendar.current
         let currentHour = calendar.component(.hour, from: currentDate)
-        
         let currentTemperature = rawWeather.hourly.temperature_2m[currentHour]
-        
-        return String(currentTemperature)
+        return String(currentTemperature) + degreeSing
     }
     
     func getDayAndNightTemperature(_ rawWeather: WeatherModel, for index: Int) -> String {
-        let dayAndNightTemperature = String(rawWeather.hourly.temperature_2m[index * 24 + 2]) + degreeSing + "C/" +
-        String(rawWeather.hourly.temperature_2m[index * 24 + 13]) + degreeSing + "C"
-        
+        let dayAndNightTemperature = String(rawWeather.hourly.temperature_2m[index * 24 + 2]) + degreeSing + "/" +
+        String(rawWeather.hourly.temperature_2m[index * 24 + 13]) + degreeSing
         return dayAndNightTemperature
     }
     
     func day(at index: Int) -> String {
         let dayDict = [0: "Sun", 1: "Mon", 2: "Tue", 3: "Wed", 4: "Thu", 5: "Fri", 6: "Sat"]
-        
         let currentDate = Date()
-        
         let calendar = Calendar.current
         let currentDay = calendar.component(.weekday, from: currentDate) - 1
         
