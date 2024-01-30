@@ -22,8 +22,8 @@ class MainViewController: UIViewController {
     
     private let tableView = UITableView()
     private let cityBarButton = UIBarButtonItem()
-    private let currentTempLabel = UICurrentTempLabel()
-    private let dayAndNightTempLabel = UIDayAndNightTempLabel()
+    private let currentTempLabel = UILabel()
+    private let dayAndNightTempLabel = UILabel()
     private let gradientLayer = CAGradientLayer()
     
 // MARK: - Life cycle
@@ -137,6 +137,7 @@ class MainViewController: UIViewController {
         
         dayAndNightTempLabel.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
+            dayAndNightTempLabel.lastBaselineAnchor.constraint(equalTo: currentTempLabel.lastBaselineAnchor),
             dayAndNightTempLabel.leadingAnchor.constraint(equalTo: currentTempLabel.trailingAnchor),
             dayAndNightTempLabel.bottomAnchor.constraint(equalTo: tableView.topAnchor, constant: -Constants.lengthBetweenLabelsAndTable)
         ])
