@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3E0182B02B3E0E1F00202170 /* CitiesTableViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E0182AF2B3E0E1F00202170 /* CitiesTableViewModel.swift */; };
+		3E0182B22B3E0ED700202170 /* AppCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E0182B12B3E0ED700202170 /* AppCoordinator.swift */; };
 		B616A5EF2A26148800E46450 /* CitiesTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B616A5EE2A26148800E46450 /* CitiesTableViewController.swift */; };
 		B616A5F12A2615E700E46450 /* City.swift in Sources */ = {isa = PBXBuildFile; fileRef = B616A5F02A2615E700E46450 /* City.swift */; };
 		B63372652A32204A007CFAC3 /* API.swift in Sources */ = {isa = PBXBuildFile; fileRef = B63372642A32204A007CFAC3 /* API.swift */; };
@@ -33,6 +35,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		3E0182AF2B3E0E1F00202170 /* CitiesTableViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CitiesTableViewModel.swift; sourceTree = "<group>"; };
+		3E0182B12B3E0ED700202170 /* AppCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppCoordinator.swift; sourceTree = "<group>"; };
 		B616A5EE2A26148800E46450 /* CitiesTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CitiesTableViewController.swift; sourceTree = "<group>"; };
 		B616A5F02A2615E700E46450 /* City.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = City.swift; sourceTree = "<group>"; };
 		B63372642A32204A007CFAC3 /* API.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = API.swift; sourceTree = "<group>"; };
@@ -93,6 +97,7 @@
 			children = (
 				B63372682A3233B5007CFAC3 /* MainViewModel.swift */,
 				B6907C202A5A1473008F2845 /* NewCityTableViewModel.swift */,
+				3E0182AF2B3E0E1F00202170 /* CitiesTableViewModel.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -119,6 +124,7 @@
 			children = (
 				B6882B112A63394500AD4015 /* Coordinator.swift */,
 				B6882B132A63395800AD4015 /* MainCoordinator.swift */,
+				3E0182B12B3E0ED700202170 /* AppCoordinator.swift */,
 			);
 			path = Coordinator;
 			sourceTree = "<group>";
@@ -259,6 +265,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3E0182B02B3E0E1F00202170 /* CitiesTableViewModel.swift in Sources */,
 				B6907C232A5A149E008F2845 /* CityModel.swift in Sources */,
 				B63372652A32204A007CFAC3 /* API.swift in Sources */,
 				B6907C1D2A5A13C2008F2845 /* RoundedTextField.swift in Sources */,
@@ -270,6 +277,7 @@
 				B6BD41E92A22771000740C15 /* MainViewController.swift in Sources */,
 				B6756C822A5871B400AB370E /* UIDayAndNightTempLabel.swift in Sources */,
 				B6756C802A5871A100AB370E /* UICurrentTempLabel.swift in Sources */,
+				3E0182B22B3E0ED700202170 /* AppCoordinator.swift in Sources */,
 				B616A5EF2A26148800E46450 /* CitiesTableViewController.swift in Sources */,
 				B6907C1F2A5A13E0008F2845 /* MatchingCityTableViewCell.swift in Sources */,
 				B6BD41E52A22771000740C15 /* AppDelegate.swift in Sources */,

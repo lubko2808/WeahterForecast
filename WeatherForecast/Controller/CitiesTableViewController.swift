@@ -18,8 +18,7 @@ class CitiesTableViewController: UIViewController {
     private let backgroundImageView = UIImageView()
     
     weak var coordinator: MainCoordinator?
-    private var cities: [City] = []
-    private var fetchResultController: NSFetchedResultsController<City>!
+    private let viewModel = CitiesTableViewModel()
     
 // MARK: - Life cycle
 
@@ -64,9 +63,9 @@ class CitiesTableViewController: UIViewController {
         tableView.separatorStyle = .none
         tableView.backgroundColor = .clear
 
+        viewModel.fetchCities()
         tableView.rowHeight = 80
         tableView.register(CityTableViewCell.self, forCellReuseIdentifier: CitiesTableViewController.cityCellIdentifier)
-        fetchCities()
         
         tableView.delegate = self
         tableView.dataSource = self
@@ -95,8 +94,7 @@ class CitiesTableViewController: UIViewController {
         searchController.searchBar.backgroundImage = UIImage()
     }
     
-// MARK: - Other
-    
+    // MARK: - Naivgation
     @objc private func navigateBack() {
         coordinator?.navigateToMainController()
     }
@@ -105,62 +103,18 @@ class CitiesTableViewController: UIViewController {
         coordinator?.addCity()
     }
     
+    // MARK: - Other
+    public func createCity(cityName: String) {
+        viewModel.createCity(cityName: cityName)
+        reloadTableView()
+    }
+    
     private func reloadTableView() {
-        if let cities = fetchResultController.fetchedObjects {
-            self.cities = cities
-            DispatchQueue.main.async {
-                self.tableView.reloadData()
-            }
+        DispatchQueue.main.async {
+            self.tableView.reloadData()
         }
     }
     
-// MARK: - Core Data
-    
-    private let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
-    
-    private func fetchCities(searchText: String = "") {
-        let fetchRequest: NSFetchRequest<City> = City.fetchRequest()
-        
-        if !searchText.isEmpty {
-            let predicate = NSPredicate(format: "name CONTAINS[c] %@", searchText)
-            fetchRequest.predicate = predicate
-        }
-        
-        let sortDescriptor = NSSortDescriptor(key: "name", ascending: true)
-        fetchRequest.sortDescriptors = [sortDescriptor]
-        
-        fetchResultController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: context, sectionNameKeyPath: nil, cacheName: nil)
-        
-        do {
-            try fetchResultController.performFetch()
-            reloadTableView()
-        } catch {
-            print(error)
-        }
-    }
-
-    func createCity(cityName: String) {
-        let newItem = City(context: context)
-        newItem.name = cityName
-        
-        do {
-            try context.save()
-            fetchCities()
-        } catch {
-            print("createCity error")
-        }
-    }
-
-    private func deleteCity(item: City) {
-        context.delete(item)
-        
-        do {
-            try context.save()
-            fetchCities()
-        } catch {
-            print("deleteCity error")
-        }
-    }
 }
 
 // MARK: - UITableViewDelegate, UITableViewDataSource
@@ -172,12 +126,12 @@ extension CitiesTableViewController: UITableViewDelegate, UITableViewDataSource 
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return cities.count
+        return viewModel.cities.count
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: CitiesTableViewController.cityCellIdentifier, for: indexPath) as! CityTableViewCell
-        cell.nameLabel.text = cities[indexPath.row].name
+        cell.nameLabel.text = viewModel.cities[indexPath.row].name
         cell.selectionStyle = .none
         return cell
     }
@@ -201,7 +155,7 @@ extension CitiesTableViewController: UITableViewDelegate, UITableViewDataSource 
             UIView.animate(withDuration: 0.125) {
                 cell.transform = .identity
             } completion: { _ in
-                let chosenCity = self.cities[indexPath.row]
+                let chosenCity = self.viewModel.cities[indexPath.row]
                 self.coordinator?.navigateToMainController(with: chosenCity.name)
             }
         }
@@ -209,10 +163,11 @@ extension CitiesTableViewController: UITableViewDelegate, UITableViewDataSource 
     
     func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         
-        let city = cities[indexPath.row]
+        let city = viewModel.cities[indexPath.row]
         
         let deleteAction = UIContextualAction(style: .destructive, title: "Delete") { action, sourceView, completionHandler in
-            self.deleteCity(item: city)
+            self.viewModel.deleteCity(item: city)
+            self.reloadTableView()
             completionHandler(true)
         }
         
@@ -231,7 +186,8 @@ extension CitiesTableViewController: UISearchResultsUpdating {
             return
         }
         
-        fetchCities(searchText: searchText)
+        viewModel.fetchCities(searchText: searchText)
+        reloadTableView()
     }
 }
 

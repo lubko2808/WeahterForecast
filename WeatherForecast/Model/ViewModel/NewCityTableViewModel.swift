@@ -7,7 +7,6 @@
 
 import Foundation
 
-import Foundation
 
 class NewCityTableViewModel {
     
@@ -41,3 +40,4 @@ class NewCityTableViewModel {
         
     }
 }
+
