@@ -106,7 +106,7 @@ class MainViewController: UIViewController {
         let cityButton = UIButton()
         cityButton.setTitle("city", for: .normal)
         cityButton.setTitleColor(.black, for: .normal)
-        cityButton.titleLabel!.font = UIFont.systemFont(ofSize: 20)
+        cityButton.titleLabel?.font = UIFont.systemFont(ofSize: 20)
         cityButton.frame = CGRect(x: cityButton.frame.origin.x, y: cityButton.frame.origin.y, width: 75, height: cityButton.frame.height)
         cityButton.backgroundColor = .white
         cityButton.layer.cornerRadius = 18

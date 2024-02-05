@@ -45,13 +45,6 @@ class MatchingCityTableViewCell: UITableViewCell {
             countryLabel.topAnchor.constraint(equalTo: cityLabel.bottomAnchor, constant: 5),
             countryLabel.leadingAnchor.constraint(equalTo: contentView.layoutMarginsGuide.leadingAnchor)
         ])
-//        NSLayoutConstraint.activate([
-//            cityLabel.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
-//            cityLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 10),
-//
-//            countryLabel.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
-//            countryLabel.leadingAnchor.constraint(equalTo: cityLabel.trailingAnchor, constant: 5)
-//        ])
     }
     
     required init?(coder: NSCoder) {

@@ -40,7 +40,11 @@ class MainCoordinator: Coordinator {
         navigationController.popViewController(animated: false)
     }
     
-    func navigateToMainController(with city: String) {
+    func navigateToMainController(with city: String? = nil) {
+        guard let city else {
+            navigationController.popViewController(animated: false)
+            return
+        }
         if let mainViewController = navigationController.viewControllers.first(where: {$0 is MainViewController}) as? MainViewController {
             mainViewController.city = city
         }
