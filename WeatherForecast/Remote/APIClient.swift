@@ -14,8 +14,13 @@ extension API {
         private let decoder = JSONDecoder()
         
         func fetch<Response: Decodable>(_ endpoint: Endpoint, completion: ((Result<Response, Error>) -> Void)? = nil) {
+            var urlRequest = URLRequest(url: endpoint.url)
             
-            let urlRequest = URLRequest(url: endpoint.url)
+            if let headers = endpoint.headers {
+                for header in headers {
+                    urlRequest.addValue(header.value, forHTTPHeaderField: header.key)
+                }
+            }
             
             let dataTask = URLSession.shared.dataTask(with: urlRequest) { data, response, error in
                 if let error = error {

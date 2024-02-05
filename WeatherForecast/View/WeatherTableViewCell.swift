@@ -12,6 +12,16 @@ class WeatherTableViewCell: UITableViewCell {
     let weatherImageView = UIImageView()
     let dayLabel = UILabel()
     let dayAndNightTemperatureLabel = UILabel()
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        
+        self.backgroundColor = .clear
+        contentView.frame = contentView.frame.inset(by: UIEdgeInsets(top: 10, left: 17, bottom: 10, right: 17))
+        contentView.backgroundColor =  UIColor.white.withAlphaComponent(0.5)
+        contentView.layer.cornerRadius = 20
+        contentView.layer.masksToBounds = true
+    }
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -20,9 +30,10 @@ class WeatherTableViewCell: UITableViewCell {
         contentView.addSubview(dayLabel)
         contentView.addSubview(dayAndNightTemperatureLabel)
         
-        dayLabel.font = UIFont.preferredFont(forTextStyle: .headline)
+        dayLabel.font = UIFont.preferredFont(forTextStyle: .title1)
+        dayLabel.textColor = .white
         dayAndNightTemperatureLabel.font = UIFont.preferredFont(forTextStyle: .body)
-        dayAndNightTemperatureLabel.textColor = UIColor.darkGray
+        dayAndNightTemperatureLabel.textColor = UIColor.gray
 
         dayAndNightTemperatureLabel.translatesAutoresizingMaskIntoConstraints = false
         dayLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -46,14 +57,5 @@ class WeatherTableViewCell: UITableViewCell {
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
-    }
-    
-    override func awakeFromNib() {
-        super.awakeFromNib()
-    }
-
-    override func setSelected(_ selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
-        
     }
 }
